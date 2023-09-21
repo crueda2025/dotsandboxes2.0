@@ -1,5 +1,7 @@
 from Edge import Edge
 import Box 
+import time
+import os.path
 
 edgeV = [90]
 edgeH = [90]
@@ -107,7 +109,7 @@ class Agent:
 
     def read_move(self):
         file_contents = ''
-        with open('move.txt', 'r') as file:
+        with open('move_file.txt', 'r') as file:
             # Read the entire file content into a string
             file_contents = file.read()
         space_index = file_contents.find(' ')
@@ -116,6 +118,7 @@ class Agent:
         oppMove[2] = file_contents[space_index+5]
         oppMove[3] = file_contents[space_index+7]
 
+        # checking if the opponent move is in the desired order by the program (ie. "smallest" point first, drawing from left to right or top to bottom)
         if oppMove[0] > oppMove[2]:
             tempx = oppMove[0]
             tempy = oppMove[1]
@@ -167,6 +170,32 @@ def main():
 
     # Continue with the rest of your Python code here
     # Note: Some parts may need modification to match Python syntax and libraries
+    
+    #program needs to check and wait for a move.go file or something like that
+    #once it has received that and verified the opponent's move it needs to start the timer?
+    
+    #while the move_file.txt file does not exist the program is supposed to wait until it does exist
+    while(not (os.path.exists("./move_file.txt"))):
+        pass
+
+    start = time.time() #timer starts for our player's move
+
+    #read the file, check if it is an empty pass move, check validity, update board, calculate move
+    read_move()
+    
+    if (check_filler_move(oppMove) == True):
+        pass #TODO this line should actually make the program spit out an error to the referee
+    else:
+        if(check_valid(oppMove) == True):
+            update_edge(oppMove)
+        else:
+            pass #TODO this line should also spit out an error to the referee
+
+    while(time.time() - start < time_limit):
+        #calculate our next move should happen here
+        pass
+
+
 
 if __name__ == "__main__":
     main()
