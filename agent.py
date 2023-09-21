@@ -3,6 +3,10 @@ import Box
 import time
 import os.path
 
+# Constants
+TIME_LIMIT = 10 #currently set at 10 seconds, should be shortened
+
+#global variables
 edgeV = [90]
 edgeH = [90]
 board = [81]
@@ -144,9 +148,6 @@ class Agent:
             return False
         
 
-# Constants
-time_limit = 10
-
 def main():
     agent = Agent()
     currTime = 0
@@ -185,7 +186,7 @@ def main():
         else:
             pass #TODO this line should also spit out an error to the referee
 
-    while(time.time() - start < time_limit):
+    while(time.time() - start < TIME_LIMIT):
         pass #TODO calculate our next move should happen here
 
     #TODO write the new move to move_file.txt
