@@ -179,12 +179,12 @@ def main():
     read_move()
 
     if (check_filler_move(oppMove) == True):
-        pass #TODO this line should actually make the program spit out an error to the referee
+        pass #TODO this line should actually make the program spit out an error to the terminal
     else:
         if(check_valid(oppMove) == True):
             update_edge(oppMove)
         else:
-            pass #TODO this line should also spit out an error to the referee
+            pass #TODO this line should also spit out an error to the terminal
 
     while(time.time() - start < TIME_LIMIT):
         pass #TODO calculate our next move should happen here
