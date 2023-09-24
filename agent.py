@@ -1,7 +1,13 @@
 from Edge import Edge
 import Box 
-import time
 import os.path
+import sys
+import time
+
+start_time = time.time()
+
+minMove = -sys.maxsize - 1
+maxMove = sys.maxsize
 
 # Constants
 TIME_LIMIT = 10 #currently set at 10 seconds, should be shortened
@@ -14,6 +20,7 @@ ply = 0
 opp = 0
 oppMove = [4]
 currMove = [4]
+
 
 class Agent:
     def __init__(self):
@@ -146,6 +153,30 @@ class Agent:
             return True
         else:
             return False
+        
+    def makeMove (self):
+        bothEdgeList = edgeV + edgeH
+        sortedList = bothEdgeList.reverse_bubble_sort
+
+        for item in sortedList:
+            break
+
+
+    def reverse_bubble_sort(arr:Edge):
+        n = len(arr)
+        for i in range(n):
+            swapped = False
+
+            for j in range(0, n - i - 1):
+                # Compare and swap if the element found is less than the next element
+                if arr[j].weight < arr[j + 1].weight:
+                    arr[j].weight, arr[j + 1].weight = arr[j + 1].weight, arr[j].weight
+                    swapped = True
+
+            # If no two elements were swapped in the inner loop, the array is sorted
+            if not swapped:
+                return
+        return
         
 
 def main():
