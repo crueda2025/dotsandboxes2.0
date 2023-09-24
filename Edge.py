@@ -10,11 +10,11 @@ class Edge:
         self.x2 = x2C
         self.y2 = y2C
 
-    def setBTL(self, newBTL):
-        self.bTL = newBTL
+    def setBTL(self):
+        self.bTL += 1
 
-    def setBBR(self, newBBR):
-        self.bBR = newBBR
+    def setBBR(self):
+        self.bBR += 1
 
     def setCaptured(self):
         self.captured = True

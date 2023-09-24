@@ -4,18 +4,18 @@ import os.path
 import sys
 import time
 
-start_time = time.time()
+start = time.time()
 
-minMove = -sys.maxsize - 1
-maxMove = sys.maxsize
+minMove = sys.maxsize
+maxMove = -sys.maxsize - 1
 
 # Constants
 TIME_LIMIT = 10 #currently set at 10 seconds, should be shortened
 
 #global variables
-edgeV = [90]
-edgeH = [90]
-board = [81]
+edgeV = []
+edgeH = []
+board = []
 ply = 0
 opp = 0
 oppMove = [4]
@@ -31,6 +31,7 @@ class Agent:
     # Return boolean true if valid move
     def check_valid(self, opp_move):
         if (oppMove[0]> 9 or oppMove[0] < 0) or (oppMove[1]> 9 or oppMove[1] < 0) or (oppMove[2]> 9 or oppMove[2] < 0) or (oppMove[3]> 9 or oppMove[3] < 0):
+            print("Move is outside the boundaries of the board")
             return False
         elif oppMove[0] == oppMove[2] and 1+oppMove[1] == oppMove[3]:
             if edgeV[oppMove[0] +oppMove[1]*10].captured ==False:
@@ -39,6 +40,7 @@ class Agent:
             if edgeH[oppMove[0] +oppMove[1]*10].captured ==False:
                 return True
         else:
+            print("Move is attempting to capture an edge that has already been claimed")
             return False
         pass
 
@@ -48,76 +50,97 @@ class Agent:
         else:
             return False
 
-
-    def update_edge(self, opp_move):
-        # Your update edge logic here
-        if oppMove[0] == oppMove[2] and 1 + oppMove[1] == oppMove[3]:
+    def update_edge(self, move, team):
+        # Vertical
+        if move[0] == move[2] and 1 + move[1] == move[3]:
             #update in the vertical edge array
-            edgeV[oppMove[0] + oppMove[1]* 9].setCaptured()
+            edgeV[move[0] + move[1]* 9].setCaptured()
 
-            if(oppMove[0] == 0):#edge case of left side
+            if(move[0] == 0):#edge case of left side
                 # update the value of the box on the right 
-                board[oppMove[0] + oppMove[1] * 8].setNumEdges()
-                if board[oppMove[0] + oppMove[1] * 8].totalEdges == 4:
-                    board[oppMove[0] + oppMove[1] * 8].setCaptured()
-                    board[oppMove[0] + oppMove[1] * 8].setTeam(False)
-                    opp+=1
-            elif oppMove[0] == 9:#edge case of the right side
+                board[move[0] + move[1] * 8].setNumEdges()
+                if board[move[0] + move[1] * 8].totalEdges == 4:
+                    board[move[0] + move[1] * 8].setCaptured()
+                    board[move[0] + move[1] * 8].setTeam(team)
+                    if team:
+                        ply+=1
+                    else:
+                        opp+=1
+            elif move[0] == 9:#edge case of the right side
             #update the value of the box on the left
-                board[oppMove[0] + oppMove[1] * 8 - 1].setNumEdges()
-                if board[oppMove[0] + oppMove[1] * 8 - 1].totalEdges == 4:
-                    board[oppMove[0] + oppMove[1] * 8 - 1].setCaptured()
-                    board[oppMove[0] + oppMove[1] * 8 - 1].setTeam(False)
-                    opp+=1
+                board[move[0] + move[1] * 8 - 1].setNumEdges()
+                if board[move[0] + move[1] * 8 - 1].totalEdges == 4:
+                    board[move[0] + move[1] * 8 - 1].setCaptured()
+                    board[move[0] + move[1] * 8 - 1].setTeam(team)
+                    if team:
+                        ply+=1
+                    else:
+                        opp+=1
             else:
                 # update the value of the box on the right
-                board[oppMove[0] + oppMove[1] * 8].setNumEdges()
+                board[move[0] + move[1] * 8].setNumEdges()
                 #check if captured
-                if board[oppMove[0] + oppMove[1] * 8].totalEdges == 4:
-                    board[oppMove[0] + oppMove[1] * 8].setCaptured()
-                    board[oppMove[0] + oppMove[1] * 8].setTeam(False)
-                    opp+=1
+                if board[move[0] + move[1] * 8].totalEdges == 4:
+                    board[move[0] + move[1] * 8].setCaptured()
+                    board[move[0] + move[1] * 8].setTeam(team)
+                    if team:
+                        ply+=1
+                    else:
+                        opp+=1
                 # update the value of the box on the left
-                board[oppMove[0] + oppMove[1] * 8 - 1].setNumEdges()
+                board[move[0] + move[1] * 8 - 1].setNumEdges()
                 #check if captured
-                if board[oppMove[0] + oppMove[1] * 8 - 1].totalEdges == 4:
-                    board[oppMove[0] + oppMove[1] * 8 - 1].setCaptured()
-                    board[oppMove[0] + oppMove[1] * 8 - 1].setTeam(False)
-                    opp+=1
+                if board[move[0] + move[1] * 8 - 1].totalEdges == 4:
+                    board[move[0] + move[1] * 8 - 1].setCaptured()
+                    board[move[0] + move[1] * 8 - 1].setTeam(team)
+                    if team:
+                        ply+=1
+                    else:
+                        opp+=1
         # Horizontal        
-        elif oppMove[1] == oppMove[3] and oppMove[0] == 1 + oppMove[2]:
-            edgeH[oppMove[0] + oppMove[1]* 10].setCaptured()
+        elif move[1] == move[3] and move[0] == 1 + move[2]:
+            edgeH[move[0] + move[1]* 10].setCaptured()
             #updates amount of edges box has
-            if oppMove[1] == 0:
-                board[oppMove[0] + oppMove[1] * 8].setNumEdges()
+            if move[1] == 0:
+                board[move[0] + move[1] * 8].setNumEdges()
                 #if box on the bottom was captured
-                if board[oppMove[0] + oppMove[1] * 8].totalEdges == 4:
-                        board[oppMove[0] + oppMove[1] * 8].setCaptured()
-                        board[oppMove[0] + oppMove[1] * 8].setTeam(False)
-                        opp+1
-            elif oppMove[1] == 9:
-                board[oppMove[0] + oppMove[1] * 8 - 1].setNumEdges()
+                if board[move[0] + move[1] * 8].totalEdges == 4:
+                    board[move[0] + move[1] * 8].setCaptured()
+                    board[move[0] + move[1] * 8].setTeam(team)
+                    if team:
+                        ply+=1
+                    else:
+                        opp+=1
+            elif move[1] == 9:
+                board[move[0] + move[1] * 8 - 1].setNumEdges()
                 #//if box on the top was captured
-                if(board[oppMove[0] + oppMove[1] * 8 - 1].totalEdges == 4):
-                    board[oppMove[0] + oppMove[1] * 8 - 1].setCaptured()
-                    board[oppMove[0] + oppMove[1] * 8 - 1].setTeam(False)
-                    opp+1
+                if(board[move[0] + move[1] * 8 - 1].totalEdges == 4):
+                    board[move[0] + move[1] * 8 - 1].setCaptured()
+                    board[move[0] + move[1] * 8 - 1].setTeam(team)
+                    if team:
+                        ply+=1
+                    else:
+                        opp+=1
             else:
-                board[oppMove[0] + oppMove[1] * 8].setNumEdges()
+                board[move[0] + move[1] * 8].setNumEdges()
                 #//if box on the bottom was captured
-                if board[oppMove[0] + oppMove[1] * 8].totalEdges == 4:
-                    board[oppMove[0] + oppMove[1] * 8].setCaptured()
-                    board[oppMove[0] + oppMove[1] * 8].setTeam(False)
-                    opp+1
-                board[oppMove[0] + oppMove[1] * 8 - 1].setNumEdges(board[oppMove[0] + oppMove[1] * 8- 1].totalEdges + 1);
+                if board[move[0] + move[1] * 8].totalEdges == 4:
+                    board[move[0] + move[1] * 8].setCaptured()
+                    board[move[0] + move[1] * 8].setTeam(team)
+                    if team:
+                        ply+=1
+                    else:
+                        opp+=1
+                board[move[0] + move[1] * 8 - 1].setNumEdges(board[move[0] + move[1] * 8- 1].totalEdges + 1)
                 #//if box on the top was captured
-                if board[oppMove[0] + oppMove[1] * 8 - 1].totalEdges == 4:
-                    board[oppMove[0] + oppMove[1] * 8 - 1].setCaptured()
-                    board[oppMove[0] + oppMove[1] * 8 - 1].setTeam(False)
-                    opp+1
+                if board[move[0] + move[1] * 8 - 1].totalEdges == 4:
+                    board[move[0] + move[1] * 8 - 1].setCaptured()
+                    board[move[0] + move[1] * 8 - 1].setTeam(team)
+                    if team:
+                        ply+=1
+                    else:
+                        opp+=1
                   
-                          
-
     def read_move(self):
         file_contents = ''
         with open('move_file.txt', 'r') as file:
@@ -146,7 +169,6 @@ class Agent:
                 oppMove[2] =  tempx
                 oppMove[3] =  tempy
 
-
     def check_win(self):
         # Your check win logic here
         if ply + opp == 81:
@@ -156,12 +178,45 @@ class Agent:
         
     def makeMove (self):
         bothEdgeList = edgeV + edgeH
-        sortedList = bothEdgeList.reverse_bubble_sort
+        if len(bothEdgeList) < 1:
+            #no moves left
+            pass
+        elif len(bothEdgeList) == 1:
+            # 1 move left
+            currMove[0] = bothEdgeList[0].x1
+            currMove[1] = bothEdgeList[0].y1
+            currMove[2] = bothEdgeList[0].x2
+            currMove[3] = bothEdgeList[0].y2
+            return
+        else:
+            counter = -1
+            sortedList = bothEdgeList.reverse_bubble_sort
+            localMin = None
+            localMax 
+            for itir in sortedList:
+                
+                counter = counter +1
+                tempArray = sortedList
+                tempArray.pop(counter)
+                for item in range(len(tempArray)):
+                    if time.time() - start > TIME_LIMIT -.5:
+                        return #best move
+                    else: 
+                        #calculate evaluation function
+                        if item == 0:
+                            localmin = tempArray(item).weight
+                        elif tempArray(item).weight < localmin:
+                            localmin = tempArray(item).weight
 
-        for item in sortedList:
-            break
-
-
+                        if localMin <= maxMove:
+                            break
+                        elif localMin < minMove:
+                            minMove = localMin
+            
+            localMax = localMin
+            if(maxMove < localMax):
+                maxMove = localMax
+            
     def reverse_bubble_sort(arr:Edge):
         n = len(arr)
         for i in range(n):
@@ -200,27 +255,30 @@ def main():
         for x in range(9):
             board[x + y * 8] = Box(edgeH[x + y * 8], edgeV[x + y * 8 + 1], edgeV[x + y * 8], edgeH[x + y * 8 + 1])
     
-    #while the move_file.txt file does not exist the program is supposed to wait until it does exist
-    while(not (os.path.exists("./move_file.txt"))):
-        pass
+    while(agent.check_win is not True):
+        #while the move_file.txt file does not exist the program is supposed to wait until it does exist
+        while((not os.path.exists("./groupname.go")) or (not os.path.exists("./groupname.pass"))):
+            pass
 
-    start = time.time() #timer starts for our player's move
+        start = time.time() #timer starts for our player's move
 
-    #read the file, check if it is an empty pass move, check validity, update board, calculate move, write move to file
-    read_move()
+        #read the file, check if it is an empty pass move, check validity, update board, calculate move, write move to file
+        agent.read_move()
 
-    if (check_filler_move(oppMove) == True):
-        pass #TODO this line should actually make the program spit out an error to the terminal
-    else:
-        if(check_valid(oppMove) == True):
-            update_edge(oppMove)
+        if (agent.check_filler_move(oppMove) == True):
+            pass #TODO this line should actually make the program spit out an error to the terminal
         else:
-            pass #TODO this line should also spit out an error to the terminal
+            if(agent.check_valid(oppMove) == True):
+                agent.update_edge(oppMove, False)
+            else:
+                pass
 
-    while(time.time() - start < TIME_LIMIT):
-        pass #TODO calculate our next move should happen here
+        while(time.time() - start < TIME_LIMIT):
+            pass #TODO calculate our next move should happen here
 
-    #TODO write the new move to move_file.txt
+        #TODO write the new move to move_file.txt
+    
+    #TODO Declare winner:
 
 
 if __name__ == "__main__":
