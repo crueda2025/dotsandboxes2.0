@@ -12,9 +12,6 @@ class Edge:
 
     def setBTL(self):
         self.bTL += 1
-        if self.bTL==2 and self.bBR==2:
-            self.chainWeight += 1
-        
         self.setWeight()
 
     def setBBR(self):

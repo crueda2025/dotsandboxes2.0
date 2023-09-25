@@ -1,5 +1,5 @@
 from Box import *
-
+import sys
 class Board:
     def __init__(self):
         self.edgeV = [Edge(0, 0, 0, 0) for _ in range(90)]
@@ -37,6 +37,7 @@ class Board:
                     self.opp+=1
 
         #team is true if our team, false if the opponent
+        # Returns the heuristic weight of the edge
         def update_edge(self, move, team):
             hueristic = None
             # Vertical

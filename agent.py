@@ -9,7 +9,7 @@ start = time.time()
 
 # Constants
 TIME_LIMIT = 10 #currently set at 10 seconds, should be shortened
-TEAM_NAME = " " #TODO set to something and message slack channel
+TEAM_NAME = "dotsnboxinator"
 
 #global variables
 edgeV = []
@@ -40,7 +40,7 @@ class Agent:
                 print("Move is attempting to capture an edge that has already been claimed")
                 return False
         elif oppMove[1] == oppMove[3] and 1+oppMove[0] == oppMove[1]:
-            if edgeH[oppMove[0] +oppMove[1]*10].captured ==False:
+            if edgeH[oppMove[0] + oppMove[1]*10].captured ==False:
                 return True
             else:
                 print("Move is attempting to capture an edge that has already been claimed")
@@ -65,8 +65,10 @@ class Agent:
             file_contents = file.read()
         tempName, tempCoord[0], tempCoord[1] = file_contents.split(" ")
         
-        #if the name in the move file is not our team name, then store the opponent name
-        if(tempName != TEAM_NAME):
+        #if the name in the move file is our team name, do nothing, if it is not, set the opponent name as the name from the file
+        if(tempName == TEAM_NAME):
+            pass
+        else:
             self.opponentName = tempName
             
         oppMove[0], oppMove[1] = tempCoord[0].split(",")
@@ -93,33 +95,82 @@ class Agent:
     def write_move(self):
         new_move = open("move_file.txt", "w")
         new_move.write(self.playername, " ", currMove[0], ",", currMove[1])
-        
+    
     def makeMove (self):
         sortedList = board.validEdges.reverse_bubble_sort()
-        if len(bothEdgeList) < 1:
+        
+        if len(board.bothEdgeList) < 1:
             #no moves left
             pass
-        elif len(bothEdgeList) == 1:
+        elif len(board.bothEdgeList) == 1:
             # 1 move left
-            currMove[0] = bothEdgeList[0].x1
-            currMove[1] = bothEdgeList[0].y1
-            currMove[2] = bothEdgeList[0].x2
-            currMove[3] = bothEdgeList[0].y2
+            currMove[0] = board.bothEdgeList[0].x1
+            currMove[1] = board.bothEdgeList[0].y1
+            currMove[2] = board.bothEdgeList[0].x2
+            currMove[3] = board.bothEdgeList[0].y2
             return
         else:
-            #return self.minimax(board, validMoves, deep, turn)
-            pass
+            tempBoard = board
+            
+            
+            maximum  = self.minimax(board, sortedList.pop(0), 3, True)
+            for thing in board.bothEdgeList:
+                if time.time()-start >= TIME_LIMIT-.5:
+                    return maximum
+                tempBoard.update_edge()
+                temp = self.minimax(board, sortedList.pop(0), 3, True)
+                if maximum.weight < temp.weight:
+                    maximum = temp
+                
+            
    
-    # true turn means our team falses means opps team
+    # true turn means our team, falses means opps team
     def minimax(self, board, validMoves, deep, turn):
-
-       
         tempArray =  validMoves
         frontArray = []
+
+        if turn:
+            bestMove = (None, -sys.maxsize)
+        else:
+            bestMove = (None, sys.maxsize)
+
+        
         if deep == 0 :
-            return None
-        for itir in validMoves:
+            return (evalFunc, tempMove)
+        if deep == 1:
+            for itir in validMoves:
+                tempMove = tempArray.pop(0)
+                frontArray.append(tempMove)
+                
+                #make a duplicate board
+                tempBoard = board
+
+                #make a fake move with the duplicate values
             
+                evalFunc = tempBoard.update_edge(tempMove, turn)
+                
+                #minimax attempt 1st part
+                if turn:
+                    if evalFunc >= tempBoard.minMove:
+                        return (evalFunc, tempMove)
+                    else:
+                        tempBoard.maxMove = evalFunc
+                else:
+                    if evalFunc <= tempBoard.maxMove:
+                        return (evalFunc, tempMove)
+                    else:
+                        tempBoard.minMove = evalFunc
+                move =(evalFunc, tempMove)
+
+                if turn:
+                    if move[1] > bestMove[0]:
+                        bestMove = (move[0], tempMove)
+                else:
+                    if move[1] < bestMove[0]:
+                        bestMove = (move[0], tempMove)
+            return bestMove
+
+        for itir in validMoves:
             tempMove = tempArray.pop(0)
             frontArray.append(tempMove)
             
@@ -130,29 +181,33 @@ class Agent:
         
             evalFunc = tempBoard.update_edge(tempMove, turn)
             
+            #minimax attempt 1st part
             if turn:
-                if evalFunc > maxMove:
-                    maxMove = evalFunc
+                if evalFunc >= tempBoard.minMove:
+                    return (evalFunc, tempMove)
+                else:
+                    tempBoard.maxMove = evalFunc
+            else:
+                if evalFunc <= tempBoard.maxMove:
+                    return (evalFunc, tempMove)
+                else:
+                    tempBoard.minMove = evalFunc
+            
+            
+            move = self.minimax(tempBoard, tempArray, deep - 1, not turn)
 
-            for item in range(len(tempArray)):
-                if time.time() - start > TIME_LIMIT - 0.5:
-                    return #best move
-                else: 
-                    #calculate evaluation function
-                    if item == 0:
-                        localmin = tempArray(item).weight
-                    elif tempArray(item).weight < localmin:
-                        localmin = tempArray(item).weight
+            if turn:
+                if move[1] > bestMove[0]:
+                    bestMove = (move[0], tempMove)
+            else:
+                if move[1] < bestMove[0]:
+                    bestMove = (move[0], tempMove)
+        return bestMove
 
-                    if localMin <= maxMove:
-                        break
-                    elif localMin < minMove:
-                        minMove = localMin
-        
-        localMax = localMin
-        if(maxMove < localMax):
-            maxMove = localMax
-        deep -= 1
+            
+                    
+
+            
             
     def reverse_bubble_sort(arr:Edge):
         n = len(arr)

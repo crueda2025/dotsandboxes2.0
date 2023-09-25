@@ -2,6 +2,10 @@
 ## Work Distribution
 
 ## User Instructions
+1. Run the agent.py file, it contains the main() method for the program
+2. Inside the agent.py file it contains several constants:
+    - TIME_LIMIT controls the amount of time the program is allowed to use to calculate a new move
+    - TEAM_NAME the name of the program's team
 
 ## Utility Function
 
