@@ -12,15 +12,21 @@ class Edge:
 
     def setBTL(self):
         self.bTL += 1
+        if self.bTL==2 and self.bBR==2:
+            self.chainWeight += 1
+        
+        self.setWeight()
 
     def setBBR(self):
         self.bBR += 1
+        self.setWeight()
 
     def setCaptured(self):
         self.captured = True
 
+
     def setWeight(self):
-        # TODO: Implement this method
+        # Sets weight of the edge
         if self.bBR == 1 and self.bTL == 1:
             self.weight = 2
         elif self.bBR == 3 or self.bTL == 3:

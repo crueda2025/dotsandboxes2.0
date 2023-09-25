@@ -7,10 +7,9 @@ import time
 
 start = time.time()
 
-
-
 # Constants
 TIME_LIMIT = 10 #currently set at 10 seconds, should be shortened
+TEAM_NAME = " " #TODO set to something and message slack channel
 
 #global variables
 edgeV = []
@@ -18,15 +17,15 @@ edgeH = []
 board = []
 ply = 0
 opp = 0
-oppMove = [4]
-currMove = [4]
+oppMove = []
+currMove = []
 
 
 class Agent:
     def __init__(self):
         self.t = 0.0
         self.curmove = ""
-        self.playername = ""
+        self.playername = TEAM_NAME
         self.opponentName = ""
 
     # Return boolean true if valid move
@@ -59,14 +58,19 @@ class Agent:
     # reads the move from move_file.txt and puts the move into oppMove[]      
     def read_move(self):
         file_contents = ''
+        tempCoord = []
+        tempName = ''
         with open('move_file.txt', 'r') as file:
             # Read the entire file content into a string
             file_contents = file.read()
-        space_index = file_contents.find(' ')
-        oppMove[0] = file_contents[space_index+1]
-        oppMove[1] = file_contents[space_index+3]
-        oppMove[2] = file_contents[space_index+5]
-        oppMove[3] = file_contents[space_index+7]
+        tempName, tempCoord[0], tempCoord[1] = file_contents.split(" ")
+        
+        #if the name in the move file is not our team name, then store the opponent name
+        if(tempName != TEAM_NAME):
+            self.opponentName = tempName
+            
+        oppMove[0], oppMove[1] = tempCoord[0].split(",")
+        oppMove[2], oppMove[3] = tempCoord[1].split(",")
 
         # checking if the opponent move is in the desired order by the program (ie. "smallest" point first, drawing from left to right or top to bottom)
         if oppMove[0] > oppMove[2]:
@@ -91,8 +95,7 @@ class Agent:
         new_move.write(self.playername, " ", currMove[0], ",", currMove[1])
         
     def makeMove (self):
-        bothEdgeList = edgeV + edgeH
-        sortedList = bothEdgeList.reverse_bubble_sort()
+        sortedList = board.validEdges.reverse_bubble_sort()
         if len(bothEdgeList) < 1:
             #no moves left
             pass
@@ -106,24 +109,30 @@ class Agent:
         else:
             #return self.minimax(board, validMoves, deep, turn)
             pass
-        
-    def minimax (self, board, validMoves, deep, turn):
+   
+    # true turn means our team falses means opps team
+    def minimax(self, board, validMoves, deep, turn):
 
-        minMove = sys.maxsize
-        maxMove = -sys.maxsize - 1
-        
-
+       
+        tempArray =  validMoves
+        frontArray = []
         if deep == 0 :
             return None
         for itir in validMoves:
-            tempMove = validMoves.pop(0)
-
+            
+            tempMove = tempArray.pop(0)
+            frontArray.append(tempMove)
+            
             #make a duplicate board
-            tempArray = validMoves
+            tempBoard = board
+
             #make a fake move with the duplicate values
-
-            validMoves.appendleft
-
+        
+            evalFunc = tempBoard.update_edge(tempMove, turn)
+            
+            if turn:
+                if evalFunc > maxMove:
+                    maxMove = evalFunc
 
             for item in range(len(tempArray)):
                 if time.time() - start > TIME_LIMIT - 0.5:

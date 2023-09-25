@@ -8,7 +8,7 @@ class Box:
         self.bottom_edge = new_bottom
         self.total_edges = 0
         self.captured = False
-        self.team = False  # Initialize as False; set to True for ourTeam
+        self.team = None  # Initialize as None; set to True for ourTeam
 
     def set_num_edges(self):
         self.total_edges += 1
