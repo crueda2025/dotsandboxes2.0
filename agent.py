@@ -112,7 +112,6 @@ class Agent:
         else:
             tempBoard = board
             
-            
             maximum  = self.minimax(board, sortedList.pop(0), 3, True)
             for thing in board.bothEdgeList:
                 if time.time()-start >= TIME_LIMIT-.5:
@@ -135,41 +134,8 @@ class Agent:
             bestMove = (None, sys.maxsize)
 
         
-        if deep == 0 :
-            return (evalFunc, tempMove)
-        if deep == 1:
-            for itir in validMoves:
-                tempMove = tempArray.pop(0)
-                frontArray.append(tempMove)
-                
-                #make a duplicate board
-                tempBoard = board
-
-                #make a fake move with the duplicate values
-            
-                evalFunc = tempBoard.update_edge(tempMove, turn)
-                
-                #minimax attempt 1st part
-                if turn:
-                    if evalFunc >= tempBoard.minMove:
-                        return (evalFunc, tempMove)
-                    else:
-                        tempBoard.maxMove = evalFunc
-                else:
-                    if evalFunc <= tempBoard.maxMove:
-                        return (evalFunc, tempMove)
-                    else:
-                        tempBoard.minMove = evalFunc
-                move =(evalFunc, tempMove)
-
-                if turn:
-                    if move[1] > bestMove[0]:
-                        bestMove = (move[0], tempMove)
-                else:
-                    if move[1] < bestMove[0]:
-                        bestMove = (move[0], tempMove)
-            return bestMove
-
+        if deep == 0:
+            return (board.evalFunc, tempMove)
         for itir in validMoves:
             tempMove = tempArray.pop(0)
             frontArray.append(tempMove)
@@ -178,8 +144,8 @@ class Agent:
             tempBoard = board
 
             #make a fake move with the duplicate values
-        
-            evalFunc = tempBoard.update_edge(tempMove, turn)
+            tempBoard.update_edge(tempMove, turn)
+            evalFunc = tempBoard.evalFunc
             
             #minimax attempt 1st part
             if turn:
