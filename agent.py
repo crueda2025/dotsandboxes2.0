@@ -39,14 +39,14 @@ class Agent:
             else: 
                 print("Move is attempting to capture an edge that has already been claimed")
                 return False
-        elif self.oppMove[1] == self.oppMove[3] and 1+self.oppMove[0] == self.oppMove[1]:
+        elif self.oppMove[1] == self.oppMove[3] and 1+self.oppMove[0] == self.oppMove[2]:
             if self.board.edgeV[self.oppMove[0] + self.oppMove[1]*10].captured ==False:
                 return True
             else:
                 print("Move is attempting to capture an edge that has already been claimed")
                 return False
         else:
-            print("Move is attempting to connect two points that are not adjacent")
+            print(f"Move is attempting to connect two points that are not adjacent {self.oppMove}")
             return False
 
     def check_filler_move(self):
@@ -125,9 +125,12 @@ class Agent:
             self.currMove[3] = validEdges[0].y2
             return self.currMove
         else:
+            #self.board.minMove = sys.maxsize
+            #self.board.maxMove = -sys.maxsize - 1
+
             tempBoard = copy.deepcopy(self.board)
             # Set the first valid move
-            maximum  = self.minimax(tempBoard, 2, True)
+            maximum  = self.minimax(tempBoard, 3, True)
             self.currMove = []
             self.currMove.append(maximum[1][0])
             self.currMove.append(maximum[1][1])
@@ -174,11 +177,13 @@ class Agent:
                 if evalFunc >= tempBoard.minMove:
                     return (evalFunc, tempMove)
                 else:
+                    board.maxMove = evalFunc
                     tempBoard.maxMove = evalFunc
             else:
                 if evalFunc <= tempBoard.maxMove:
                     return (evalFunc, tempMove)
                 else:
+                    board.maxMove = evalFunc
                     tempBoard.minMove = evalFunc
             
             #flips the team function 
@@ -217,7 +222,7 @@ class Agent:
 
     #checks for the existence of an end_game.txt file, signifying the end of the game
     def check_win(self):
-        if(os.path.exists("end_game.txt")):
+        if(os.path.exists("end_game")):
             return True
         else:
             return False

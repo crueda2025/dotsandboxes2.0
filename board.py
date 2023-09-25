@@ -55,8 +55,8 @@ class Board:
             try:  
                 index = self.validEdges.index(self.edgeV[move[0] + move[1]* 9])
                 tempValidEdges.pop(index)
-            except:
-                print(f"Error dealing with {move}")
+            except ValueError as e:
+                print(f"Error dealing with {move}, {e}")
             
 
             if(move[0] == 0):#edge case of left side
