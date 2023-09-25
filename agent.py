@@ -123,14 +123,15 @@ class Agent:
         tempArray =  validMoves
         frontArray = []
 
-        if time.time() - start >= TIME_LIMIT-.5
+        if time.time() - start >= TIME_LIMIT-.5:
+            return (None, None)
         if turn:
             bestMove = (-sys.maxsize, None)
         else:
             bestMove = (sys.maxsize, None)
 
-        if deep == 0:
-            return (board.evalFunc, tempMove)
+        if deep == 0 or len(validMoves) == 0:
+            return (board.evalFunc, None)
         for itir in validMoves:
             tempMove = tempArray.pop(0)
             
@@ -155,6 +156,8 @@ class Agent:
             
             move = self.minimax(tempBoard, frontArray.append(tempArray), deep - 1, not turn)
 
+            if move[0] == None:
+                break
             if turn:
                 if move[0] > bestMove[0]:
                     bestMove = (move[0], tempMove)
