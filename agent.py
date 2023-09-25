@@ -111,29 +111,23 @@ class Agent:
             return
         else:
             tempBoard = board
-            
-            maximum  = self.minimax(board, sortedList.pop(0), 3, True)
-            for thing in board.bothEdgeList:
-                if time.time()-start >= TIME_LIMIT-.5:
-                    return maximum
-                tempBoard.update_edge()
-                temp = self.minimax(board, sortedList.pop(0), 3, True)
-                if maximum.weight < temp.weight:
-                    maximum = temp
+            # Set the first valid move
+            maximum  = self.minimax(board, sortedList, 4, True)
+            return maximum[1]
+
                 
             
-   
+   # returns (hueristic, move)
     # true turn means our team, falses means opps team
     def minimax(self, board, validMoves, deep, turn):
         tempArray =  validMoves
         frontArray = []
 
         if turn:
-            bestMove = (None, -sys.maxsize)
+            bestMove = (-sys.maxsize, None)
         else:
-            bestMove = (None, sys.maxsize)
+            bestMove = (sys.maxsize, None)
 
-        
         if deep == 0:
             return (board.evalFunc, tempMove)
         for itir in validMoves:
@@ -158,14 +152,13 @@ class Agent:
                 else:
                     tempBoard.minMove = evalFunc
             
-            
             move = self.minimax(tempBoard, frontArray.append(tempArray), deep - 1, not turn)
 
             if turn:
-                if move[1] > bestMove[0]:
+                if move[0] > bestMove[0]:
                     bestMove = (move[0], tempMove)
             else:
-                if move[1] < bestMove[0]:
+                if move[0] < bestMove[0]:
                     bestMove = (move[0], tempMove)
             frontArray.append(tempMove)
         return bestMove
@@ -227,7 +220,7 @@ def main():
                 pass
 
         while((time.time() - start < TIME_LIMIT) and agent.check_filler_move(oppMove) == False):
-            pass #TODO calculate our next move should happen here
+            agent.makeMove()
 
         #writes currMove to move_file.txt
         agent.write_move()
