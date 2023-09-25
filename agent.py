@@ -123,6 +123,7 @@ class Agent:
         tempArray =  validMoves
         frontArray = []
 
+        if time.time() - start >= TIME_LIMIT-.5
         if turn:
             bestMove = (-sys.maxsize, None)
         else:
@@ -219,7 +220,7 @@ def main():
             else:
                 pass
 
-        while((time.time() - start < TIME_LIMIT) and agent.check_filler_move(oppMove) == False):
+        while((time.time() - start < (TIME_LIMIT - 0.5)) and agent.check_filler_move(oppMove) == False):
             agent.makeMove()
 
         #writes currMove to move_file.txt
