@@ -21,8 +21,7 @@ class Board:
         self.opp = 0
         self.evalFunc = 0
         
-        self.validEdges = self.edgeV
-        self.validEdges.append(self.edgeH)
+        self.validEdges = self.edgeV + self.edgeH
         self.minMove = sys.maxsize
         self.maxMove = -sys.maxsize - 1
 
@@ -45,12 +44,21 @@ class Board:
     #team is true if our team, false if the opponent
     # Returns the heuristic weight of the edge
     def update_edge(self, move, team):
+        tempValidEdges = self.validEdges
+        print(move)
+        print(len(self.edgeV))
+        print(len(tempValidEdges))
+
         hueristic = None
         # Vertical
         if move[0] == move[2] and 1 + move[1] == move[3]:
             #update in the vertical edge array
             self.edgeV[move[0] + move[1]* 9].setCaptured()
             hueristic = self.edgeV[move[0] + move[1]* 9].weight
+            index = self.validEdges.index(self.edgeV[move[0] + move[1]* 9])
+            tempValidEdges.pop(index)
+            print(len(self.edgeV))
+            print(len(tempValidEdges))
 
             if(move[0] == 0):#edge case of left side
                 # update the value of the box on the right 
@@ -70,9 +78,10 @@ class Board:
                 #check if captured
                 self.check_cap(move[0] + move[1] * 8 - 1, team)
         # Horizontal        
-        elif move[1] == move[3] and move[0] == 1 + move[2]:
-            self.edgeH[move[0] + move[1]* 10].setCaptured()
-            hueristic = self.edgeH[move[0] + move[1]* 10].weight
+        elif move[1] == move[3] and move[0] + 1 == move[2]:
+            self.edgeH[move[0] + move[1]* 9].setCaptured()
+            hueristic = self.edgeH[move[0] + move[1]* 9].weight
+            
             #updates amount of edges box has
             if move[1] == 0:
                 self.board[move[0] + move[1] * 8].setNumEdges()
@@ -91,15 +100,14 @@ class Board:
                 self.check_cap(move[0] + move[1] * 8, team)
                 
                 # set edges in second box
-                self.board[move[0] + move[1] * 8 - 1].setNumEdges(self.board[move[0] + move[1] * 8- 1].totalEdges + 1)
+                self.board[move[0] + move[1] * 8 - 1].setNumEdges()
                 
                 #//if box on the top was captured
                 self.check_cap(move[0] + move[1] * 8 - 1, team)
         
         #for all the valid edges remaining, check to see if they were marked as captured
         #if marked as captured, remove them from the list of valid moves/edges remaining
-        for each in self.validEdges:
-            if each.captured:
-                self.validEdges.remove(each)
+        
+        
         return hueristic
 

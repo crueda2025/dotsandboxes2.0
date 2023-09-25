@@ -4,21 +4,19 @@ from board import Board
 import os.path
 import sys
 import time
+import copy
 
-start = None
 
 # Constants
 TIME_LIMIT = 10 #currently set at 10 seconds, should be shortened
 TEAM_NAME = "dotsnboxinator"
 
 #global variables
-edgeV = []
-edgeH = []
-board = []
+
 ply = 0
 opp = 0
-oppMove = []
-currMove = []
+
+
 
 
 class Agent:
@@ -27,20 +25,24 @@ class Agent:
         self.curmove = ""
         self.playername = TEAM_NAME
         self.opponentName = ""
+        self.oppMove = []
+        self.currMove = []
+        self.board:Board()
+        self.start = None
 
     # Return boolean true if valid move
-    def check_valid(self, opp_move):
-        if (oppMove[0]> 9 or oppMove[0] < 0) or (oppMove[1]> 9 or oppMove[1] < 0) or (oppMove[2]> 9 or oppMove[2] < 0) or (oppMove[3]> 9 or oppMove[3] < 0):
+    def check_valid(self):
+        if (self.oppMove[0]> 9 or self.oppMove[0] < 0) or (self.oppMove[1]> 9 or self.oppMove[1] < 0) or (self.oppMove[2]> 9 or self.oppMove[2] < 0) or (self.oppMove[3]> 9 or self.oppMove[3] < 0):
             print("Move is outside the boundaries of the board")
             return False
-        elif oppMove[0] == oppMove[2] and 1+oppMove[1] == oppMove[3]:
-            if edgeV[oppMove[0] +oppMove[1]*10].captured ==False:
+        elif self.oppMove[0] == self.oppMove[2] and 1+self.oppMove[1] == self.oppMove[3]:
+            if self.board.edgeH[self.oppMove[0] +self.oppMove[1]*10].captured ==False:
                 return True
             else: 
                 print("Move is attempting to capture an edge that has already been claimed")
                 return False
-        elif oppMove[1] == oppMove[3] and 1+oppMove[0] == oppMove[1]:
-            if edgeH[oppMove[0] + oppMove[1]*10].captured ==False:
+        elif self.oppMove[1] == self.oppMove[3] and 1+self.oppMove[0] == self.oppMove[1]:
+            if self.board.edgeV[self.oppMove[0] + self.oppMove[1]*10].captured ==False:
                 return True
             else:
                 print("Move is attempting to capture an edge that has already been claimed")
@@ -49,9 +51,11 @@ class Agent:
             print("Move is attempting to connect two points that are not adjacent")
             return False
 
-    def check_filler_move(self, move):
-        if move[0] == 0 and move[1] == 0 and move[2] == 0 and move[3] == 0:
-            return True
+    def check_filler_move(self):
+        print(self.oppMove)
+        print(f'The length of opp move is {len(self.oppMove)}')
+        if self.oppMove[0] == 0 and self.oppMove[1] == 0 and self.oppMove[2] == 0 and self.oppMove[3] == 0:
+            return True 
         else:
             return False
           
@@ -64,89 +68,98 @@ class Agent:
             # Read the entire file content into a string
             file_contents = file.read()
         temp = file_contents.split(" ")
-        if len(temp) < 3:
+        if len(temp) <= 1:
             print ('We have first move')
-            oppMove = [0, 0, 0, 0]
+            self.oppMove = [0, 0, 0, 0]
             return
         print(temp)
         tempCoord = temp[1] + ',' + temp[2]
-        tempName = temp[0]
-        
+        tempName = temp[0] 
+         
         #if the name in the move file is our team name, do nothing, if it is not, set the opponent name as the name from the file
         if(tempName == TEAM_NAME):
             pass
         else:
             self.opponentName = tempName
             
-        oppMove = []
+        self.oppMove = []
         
         for m in tempCoord.split(","):
             temp = int(m)
-            oppMove.append(temp)
+            self.oppMove.append(temp)
 
         # checking if the opponent move is in the desired order by the program (ie. "smallest" point first, drawing from left to right or top to bottom)
-        if oppMove[0] > oppMove[2]:
-            tempx = oppMove[0]
-            tempy = oppMove[1]
-            oppMove[0] = oppMove [2]
-            oppMove[1] = oppMove [3]
-            oppMove[2] =  tempx
-            oppMove[3] =  tempy
+        if self.oppMove[0] > self.oppMove[2]:
+            tempx = self.oppMove[0]
+            tempy = self.oppMove[1]
+            self.oppMove[0] = self.oppMove [2]
+            self.oppMove[1] = self.oppMove [3]
+            self.oppMove[2] =  tempx
+            self.oppMove[3] =  tempy
         else:
-            if oppMove[1] > oppMove[3]:
-                tempx = oppMove[0]
-                tempy = oppMove[1]
-                oppMove[0] = oppMove [2]
-                oppMove[1] = oppMove [3]
-                oppMove[2] =  tempx
-                oppMove[3] =  tempy
+            if self.oppMove[1] > self.oppMove[3]:
+                tempx = self.oppMove[0]
+                tempy = self.oppMove[1]
+                self.oppMove[0] = self.oppMove [2]
+                self.oppMove[1] = self.oppMove [3]
+                self.oppMove[2] =  tempx
+                self.oppMove[3] =  tempy
+        print(self.oppMove)
 
     # overwrites the old move in move_file.txt with the new move
     def write_move(self):
-        new_move = open("move_file.txt", "w")
-        new_move.write(f"{self.playername} {currMove[0]},{currMove[1]} {currMove[2]}, {currMove[3]}")
+        new_move = open("move_file", "w")
+        new_move.write(f"{self.playername} {self.currMove[0]},{self.currMove[1]} {self.currMove[2]}, {self.currMove[3]}")
     
     def makeMove (self):
-        sortedList = board.validEdges.reverse_bubble_sort()
-        
-        if len(board.bothEdgeList) < 1:
+        #hold off on bubble sort for right now
+        #sortedList = board.validEdges.reverse_bubble_sort()
+        validEdges = self.board.validEdges
+        if len(validEdges) < 1:
             #no moves left
             pass
-        elif len(board.bothEdgeList) == 1:
+        elif len(validEdges) == 1:
             # 1 move left
-            currMove[0] = board.bothEdgeList[0].x1
-            currMove[1] = board.bothEdgeList[0].y1
-            currMove[2] = board.bothEdgeList[0].x2
-            currMove[3] = board.bothEdgeList[0].y2
-            return
+            self.currMove[0] = validEdges[0].x1
+            self.currMove[1] = validEdges[0].y1
+            self.currMove[2] = validEdges[0].x2
+            self.currMove[3] = validEdges[0].y2
+            return self.currMove
         else:
-            tempBoard = board
+            tempBoard = copy.deepcopy(self.board)
             # Set the first valid move
-            maximum  = self.minimax(board, sortedList, 4, True)
+            maximum  = self.minimax(tempBoard, 2, True)
+            self.currMove[0] = maximum[0].x1
+            self.currMove[1] = maximum[0].y1
+            self.currMove[2] = maximum[0].x2
+            self.currMove[3] = maximum[0].y2
             return maximum[1]
 
                 
             
    # returns (hueristic, move)
     # true turn means our team, false means opps team
-    def minimax(self, board, validMoves, deep, turn):
-        tempArray =  validMoves
+    def minimax(self, board, deep, turn):
+        print (f'Minimax is {deep} and valid moves is {len(board.validEdges)}')
+        tempArray =  copy.deepcopy(board.validEdges)
         frontArray = []
 
-        if time.time() - start >= TIME_LIMIT-.5:
+        if time.time() - self.start >= TIME_LIMIT-.5:
             return (None, None)
         if turn:
             bestMove = (-sys.maxsize, None)
         else:
             bestMove = (sys.maxsize, None)
 
-        if deep == 0 or len(validMoves) == 0:
+        if deep == 0 or tempArray is None:
             return (board.evalFunc, None)
-        for itir in validMoves:
-            tempMove = tempArray.pop(0)
+        for itir in tempArray:
+            #tempEdge = tempArray.pop(0)
+
+            tempMove = [itir.x1, itir.y1, itir.x2, itir.y2]
             
             #make a duplicate board
-            tempBoard = board
+            tempBoard = copy.deepcopy(board)
 
             #make a fake move with the duplicate values
             tempPly = tempBoard.ply
@@ -169,11 +182,11 @@ class Agent:
                     tempBoard.minMove = evalFunc
             
             #flips the team function 
-            if tempPly == tempBoard.ply - 1 or tempOpp == tempBoard - 1:
+            if tempPly == tempBoard.ply - 1 or tempOpp == tempBoard.opp - 1:
                 turn = not turn
 
             
-            move = self.minimax(tempBoard, frontArray.append(tempArray), deep - 1, not turn)
+            move = self.minimax(tempBoard, deep - 1, not turn)
 
             if move[0] == None:
                 break
@@ -183,13 +196,8 @@ class Agent:
             else:
                 if move[0] < bestMove[0]:
                     bestMove = (move[0], tempMove)
-            frontArray.append(tempMove)
+            #frontArray.append(tempMove)
         return bestMove
-
-            
-                    
-
-            
             
     def reverse_bubble_sort(arr:Edge):
         n = len(arr)
@@ -218,27 +226,28 @@ class Agent:
 def main():
     agent = Agent()
     gameBoard = Board()
-    currTime = 0
-    startTime = 0
+    agent.board = gameBoard
+    
     print ('DotsNBoxinator working')
     while(agent.check_win() == False):
-        print ('DotsNBoxinator maine while loop')
+        print ('DotsNBoxinator main while loop')
         #while the move_file.txt file does not exist the program is supposed to wait until it does exist
         while((not os.path.exists("DotsNBoxinator.go")) and (not os.path.exists("DotsNBoxinator.go.pass"))):
             time.sleep(.1)
             pass
 
-        start = time.time() #timer starts for our player's move
+        agent.start = time.time() #timer starts for our player's move
 
         #read the file, check if it is an empty pass move, check validity, update board, calculate move, write move to file
         agent.read_move()
         
-        if(agent.check_filler_move(oppMove) == True):
+        if(agent.check_filler_move() == True):
             pass
-        elif(agent.check_valid(oppMove) == True):
-            agent.update_edge(oppMove, False)
-        agent.makeMove
-
+        elif(agent.check_valid() == True):
+            print('Updating board with opp move')
+            agent.board.update_edge(agent.oppMove, False)
+        agent.board.update_edge(agent.makeMove(), True)
+        
         #writes currMove to move_file.txt
         agent.write_move()
     

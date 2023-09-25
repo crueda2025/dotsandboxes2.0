@@ -6,12 +6,12 @@ class Box:
         self.right_edge = new_right
         self.left_edge = new_left
         self.bottom_edge = new_bottom
-        self.total_edges = 0
+        self.totalEdges = 0
         self.captured = False
         self.team = None  # Initialize as None; set to True for ourTeam
 
-    def set_num_edges(self):
-        self.total_edges += 1
+    def setNumEdges(self):
+        self.totalEdges += 1
         # Setting the new box weights in the boxes edges
         self.right_edge.setBTL()
         self.left_edge.setBBR()
