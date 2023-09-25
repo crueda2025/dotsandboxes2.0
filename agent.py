@@ -49,7 +49,7 @@ class Agent:
             print("Move is attempting to connect two points that are not adjacent")
             return False
 
-    def check_filler_move(move):
+    def check_filler_move(self, move):
         if move[0] == 0 and move[1] == 0 and move[2] == 0 and move[3] == 0:
             return True
         else:
@@ -64,7 +64,12 @@ class Agent:
             # Read the entire file content into a string
             file_contents = file.read()
         temp = file_contents.split(" ")
-        tempCoord = temp[1:2]
+        if len(temp) < 3:
+            print ('We have first move')
+            oppMove = [0, 0, 0, 0]
+            return
+        print(temp)
+        tempCoord = temp[1] + ',' + temp[2]
         tempName = temp[0]
         
         #if the name in the move file is our team name, do nothing, if it is not, set the opponent name as the name from the file
@@ -73,10 +78,11 @@ class Agent:
         else:
             self.opponentName = tempName
             
-        oppMove = temp[1].split(",")
-        oppMove.append(temp[2].split(','))
-        for m in range(len(oppMove)):
-            oppMove[m] = int(oppMove[m])
+        oppMove = []
+        
+        for m in tempCoord.split(","):
+            temp = int(m)
+            oppMove.append(temp)
 
         # checking if the opponent move is in the desired order by the program (ie. "smallest" point first, drawing from left to right or top to bottom)
         if oppMove[0] > oppMove[2]:
@@ -226,7 +232,7 @@ def main():
 
         #read the file, check if it is an empty pass move, check validity, update board, calculate move, write move to file
         agent.read_move()
-
+        
         if(agent.check_filler_move(oppMove) == True):
             pass
         elif(agent.check_valid(oppMove) == True):
@@ -237,10 +243,10 @@ def main():
         agent.write_move()
     
     if (gameBoard.check_win):
-        if(gameboard.ply - gameboard.opp > 0):
+        if(gameBoard.ply - gameBoard.opp > 0):
             print(TEAM_NAME, " has won!")
         else:
-            print(opponentName, " has won!")
+            print(agent.opponentName, " has won!")
 
 
 if __name__ == "__main__":
