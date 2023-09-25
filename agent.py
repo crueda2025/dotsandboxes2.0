@@ -139,8 +139,12 @@ class Agent:
             tempBoard = board
 
             #make a fake move with the duplicate values
+            tempPly = tempBoard.ply
+            tempOpp = tempBoard.opp
             tempBoard.update_edge(tempMove, turn)
             evalFunc = tempBoard.evalFunc
+
+            
             
             #minimax attempt 1st part
             if turn:
@@ -153,6 +157,11 @@ class Agent:
                     return (evalFunc, tempMove)
                 else:
                     tempBoard.minMove = evalFunc
+            
+            #flips the team function 
+            if tempPly == tempBoard.ply - 1 or tempOpp == tempBoard - 1:
+                turn = not turn
+
             
             move = self.minimax(tempBoard, frontArray.append(tempArray), deep - 1, not turn)
 
