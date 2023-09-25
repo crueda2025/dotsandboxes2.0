@@ -7,8 +7,7 @@ import time
 
 start = time.time()
 
-minMove = sys.maxsize
-maxMove = -sys.maxsize - 1
+
 
 # Constants
 TIME_LIMIT = 10 #currently set at 10 seconds, should be shortened
@@ -28,6 +27,7 @@ class Agent:
         self.t = 0.0
         self.curmove = ""
         self.playername = ""
+        self.opponentName = ""
 
     # Return boolean true if valid move
     def check_valid(self, opp_move):
@@ -90,8 +90,9 @@ class Agent:
         new_move = open("move_file.txt", "w")
         new_move.write(self.playername, " ", currMove[0], ",", currMove[1])
         
-    def makeMove (self,):
+    def makeMove (self):
         bothEdgeList = edgeV + edgeH
+        sortedList = bothEdgeList.reverse_bubble_sort()
         if len(bothEdgeList) < 1:
             #no moves left
             pass
@@ -103,33 +104,46 @@ class Agent:
             currMove[3] = bothEdgeList[0].y2
             return
         else:
-            counter = -1
-            sortedList = bothEdgeList.reverse_bubble_sort
-            localMin = None
-            localMax 
-            for itir in sortedList:
-                
-                counter = counter +1
-                tempArray = sortedList
-                tempArray.pop(counter)
-                for item in range(len(tempArray)):
-                    if time.time() - start > TIME_LIMIT -.5:
-                        return #best move
-                    else: 
-                        #calculate evaluation function
-                        if item == 0:
-                            localmin = tempArray(item).weight
-                        elif tempArray(item).weight < localmin:
-                            localmin = tempArray(item).weight
+            #return self.minimax(board, validMoves, deep, turn)
+            pass
+        
+    def minimax (self, board, validMoves, deep, turn):
 
-                        if localMin <= maxMove:
-                            break
-                        elif localMin < minMove:
-                            minMove = localMin
-            
-            localMax = localMin
-            if(maxMove < localMax):
-                maxMove = localMax
+        minMove = sys.maxsize
+        maxMove = -sys.maxsize - 1
+        
+
+        if deep == 0 :
+            return None
+        for itir in validMoves:
+            tempMove = validMoves.pop(0)
+
+            #make a duplicate board
+            tempArray = validMoves
+            #make a fake move with the duplicate values
+
+            validMoves.appendleft
+
+
+            for item in range(len(tempArray)):
+                if time.time() - start > TIME_LIMIT - 0.5:
+                    return #best move
+                else: 
+                    #calculate evaluation function
+                    if item == 0:
+                        localmin = tempArray(item).weight
+                    elif tempArray(item).weight < localmin:
+                        localmin = tempArray(item).weight
+
+                    if localMin <= maxMove:
+                        break
+                    elif localMin < minMove:
+                        minMove = localMin
+        
+        localMax = localMin
+        if(maxMove < localMax):
+            maxMove = localMax
+        deep -= 1
             
     def reverse_bubble_sort(arr:Edge):
         n = len(arr)
@@ -145,8 +159,15 @@ class Agent:
             # If no two elements were swapped in the inner loop, the array is sorted
             if not swapped:
                 return
-        return
-        
+        return    
+
+    #checks for the existence of an end_game.txt file, signifying the end of the game
+    def check_win(self):
+        if(os.path.exists("end_game.txt")):
+            return False
+        else:
+            return True
+
 
 def main():
     agent = Agent()
@@ -155,8 +176,10 @@ def main():
     startTime = 0
     
     while(gameBoard.check_win is not True):
+        agent.check_win() #first thing the agent needs to do is check whether the game is over or not
+       
         #while the move_file.txt file does not exist the program is supposed to wait until it does exist
-        while((not os.path.exists("./groupname.go")) or (not os.path.exists("./groupname.pass"))):
+        while((not os.path.exists(playername, ".go")) or (not os.path.exists(playername, ".go"))):
             pass
 
         start = time.time() #timer starts for our player's move
@@ -165,20 +188,21 @@ def main():
         agent.read_move()
 
         if (agent.check_filler_move(oppMove) == True):
-            pass #TODO this line should actually make the program spit out an error to the terminal
+            write_pass = open("move_file.txt", "w")
+            write_pass.write(self.playername, " 0,0 0,0")
         else:
             if(agent.check_valid(oppMove) == True):
                 agent.update_edge(oppMove, False)
             else:
                 pass
 
-        while(time.time() - start < TIME_LIMIT):
+        while((time.time() - start < TIME_LIMIT) and agent.check_filler_move(oppMove) == False):
             pass #TODO calculate our next move should happen here
 
         #writes currMove to move_file.txt
         agent.write_move()
     
-    #TODO Declare winner:
+    #TODO Declare winner: 
 
 
 if __name__ == "__main__":

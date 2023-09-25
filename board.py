@@ -6,6 +6,7 @@ class Board:
         self.edgeV = [Edge(0, 0, 0, 0) for _ in range(90)]
         self.edgeH = [Edge(0, 0, 0, 0) for _ in range(90)]
         self.board = [Box(Edge(0, 0, 0, 0), Edge(0, 0, 0, 0), Edge(0, 0, 0, 0), Edge(0, 0, 0, 0)) for _ in range(81)]
+        self.uncaptured = []
 
         for y in range(9):
             for x in range(10):
@@ -20,6 +21,8 @@ class Board:
                 self.board[x + y * 8] = Box(self.dgeH[x + y * 8], self.edgeV[x + y * 8 + 1], self.edgeV[x + y * 8], self.edgeH[x + y * 8 + 1])
         self.ply = 0
         self.opp = 0
+
+        #maybe add an array of all uncaptured edges
         
         def check_cap(self, num, team):
             if self.board[num].totalEdges == 4:
@@ -81,9 +84,3 @@ class Board:
                     
 
 
-        def check_win(self):
-            # Your check win logic here
-            if self.ply + self.opp == 81:
-                return True
-            else:
-                return False
