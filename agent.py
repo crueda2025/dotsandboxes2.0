@@ -5,7 +5,7 @@ import os.path
 import sys
 import time
 
-start = time.time()
+start = None
 
 # Constants
 TIME_LIMIT = 10 #currently set at 10 seconds, should be shortened
@@ -94,7 +94,7 @@ class Agent:
     # overwrites the old move in move_file.txt with the new move
     def write_move(self):
         new_move = open("move_file.txt", "w")
-        new_move.write(self.playername, " ", currMove[0], ",", currMove[1])
+        new_move.write(f"{self.playername} {currMove[0]},{currMove[1]} {currMove[2]}, {currMove[3]}")
     
     def makeMove (self):
         sortedList = board.validEdges.reverse_bubble_sort()
@@ -191,9 +191,9 @@ class Agent:
     #checks for the existence of an end_game.txt file, signifying the end of the game
     def check_win(self):
         if(os.path.exists("end_game.txt")):
-            return False
-        else:
             return True
+        else:
+            return False
 
 
 def main():
@@ -202,11 +202,10 @@ def main():
     currTime = 0
     startTime = 0
     
-    while(gameBoard.check_win is not True):
-        agent.check_win() #first thing the agent needs to do is check whether the game is over or not
+    while(agent.check_win() == False):
        
         #while the move_file.txt file does not exist the program is supposed to wait until it does exist
-        while((not os.path.exists(playername, ".go")) or (not os.path.exists(playername, ".go"))):
+        while((not os.path.exists("DotsNBoxinator.go")) and (not os.path.exists("DotsNBoxinator.go.pass"))):
             pass
 
         start = time.time() #timer starts for our player's move
@@ -214,17 +213,11 @@ def main():
         #read the file, check if it is an empty pass move, check validity, update board, calculate move, write move to file
         agent.read_move()
 
-        if (agent.check_filler_move(oppMove) == True):
-            write_pass = open("move_file.txt", "w")
-            write_pass.write(self.playername, " 0,0 0,0")
-        else:
-            if(agent.check_valid(oppMove) == True):
-                agent.update_edge(oppMove, False)
-            else:
-                pass
-
-        while((time.time() - start < (TIME_LIMIT - 0.5)) and agent.check_filler_move(oppMove) == False):
-            agent.makeMove()
+        if(agent.check_filler_move(oppMove) == True):
+            pass
+        elif(agent.check_valid(oppMove) == True):
+            agent.update_edge(oppMove, False)
+        agent.makeMove
 
         #writes currMove to move_file.txt
         agent.write_move()
