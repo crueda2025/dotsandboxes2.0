@@ -60,10 +60,12 @@ class Agent:
         file_contents = ''
         tempCoord = []
         tempName = ''
-        with open('move_file.txt', 'r') as file:
+        with open('move_file', 'r') as file:
             # Read the entire file content into a string
             file_contents = file.read()
-        tempName, tempCoord[0], tempCoord[1] = file_contents.split(" ")
+        temp = file_contents.split(" ")
+        tempCoord = temp[1:2]
+        tempName = temp[0]
         
         #if the name in the move file is our team name, do nothing, if it is not, set the opponent name as the name from the file
         if(tempName == TEAM_NAME):
@@ -71,8 +73,10 @@ class Agent:
         else:
             self.opponentName = tempName
             
-        oppMove[0], oppMove[1] = tempCoord[0].split(",")
-        oppMove[2], oppMove[3] = tempCoord[1].split(",")
+        oppMove = temp[1].split(",")
+        oppMove.append(temp[2].split(','))
+        for m in range(len(oppMove)):
+            oppMove[m] = int(oppMove[m])
 
         # checking if the opponent move is in the desired order by the program (ie. "smallest" point first, drawing from left to right or top to bottom)
         if oppMove[0] > oppMove[2]:
@@ -210,11 +214,12 @@ def main():
     gameBoard = Board()
     currTime = 0
     startTime = 0
-    
+    print ('DotsNBoxinator working')
     while(agent.check_win() == False):
-       
+        print ('DotsNBoxinator maine while loop')
         #while the move_file.txt file does not exist the program is supposed to wait until it does exist
         while((not os.path.exists("DotsNBoxinator.go")) and (not os.path.exists("DotsNBoxinator.go.pass"))):
+            time.sleep(.1)
             pass
 
         start = time.time() #timer starts for our player's move
