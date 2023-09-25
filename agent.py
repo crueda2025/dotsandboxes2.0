@@ -118,7 +118,7 @@ class Agent:
                 
             
    # returns (hueristic, move)
-    # true turn means our team, falses means opps team
+    # true turn means our team, false means opps team
     def minimax(self, board, validMoves, deep, turn):
         tempArray =  validMoves
         frontArray = []
@@ -229,7 +229,11 @@ def main():
         #writes currMove to move_file.txt
         agent.write_move()
     
-    #TODO Declare winner: 
+    if (gameBoard.check_win):
+        if(gameboard.ply - gameboard.opp > 0):
+            print(TEAM_NAME, " has won!")
+        else:
+            print(opponentName, " has won!")
 
 
 if __name__ == "__main__":
