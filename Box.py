@@ -18,8 +18,8 @@ class Box:
         self.bottom_edge.setBBR()
         self.top_edge.setBTL()
 
-    def set_captured(self):
+    def setCaptured(self):
         self.captured = True
 
-    def set_team(self, our_team):
+    def setTeam(self, our_team):
         self.team = our_team

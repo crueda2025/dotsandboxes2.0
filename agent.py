@@ -9,7 +9,7 @@ import copy
 
 # Constants
 TIME_LIMIT = 10 #currently set at 10 seconds, should be shortened
-TEAM_NAME = "dotsnboxinator"
+TEAM_NAME = "DotsNBoxinator"
 
 #global variables
 
@@ -17,13 +17,11 @@ ply = 0
 opp = 0
 
 
-
-
 class Agent:
-    def __init__(self):
+    def __init__(self, playerName):
         self.t = 0.0
         self.curmove = ""
-        self.playername = TEAM_NAME
+        self.playername = playerName
         self.opponentName = ""
         self.oppMove = []
         self.currMove = []
@@ -52,8 +50,6 @@ class Agent:
             return False
 
     def check_filler_move(self):
-        print(self.oppMove)
-        print(f'The length of opp move is {len(self.oppMove)}')
         if self.oppMove[0] == 0 and self.oppMove[1] == 0 and self.oppMove[2] == 0 and self.oppMove[3] == 0:
             return True 
         else:
@@ -69,10 +65,10 @@ class Agent:
             file_contents = file.read()
         temp = file_contents.split(" ")
         if len(temp) <= 1:
-            print ('We have first move')
+            print (f'{self.playername} has first move')
             self.oppMove = [0, 0, 0, 0]
             return
-        print(temp)
+        
         tempCoord = temp[1] + ',' + temp[2]
         tempName = temp[0] 
          
@@ -104,12 +100,14 @@ class Agent:
                 self.oppMove[1] = self.oppMove [3]
                 self.oppMove[2] =  tempx
                 self.oppMove[3] =  tempy
-        print(self.oppMove)
+        
 
     # overwrites the old move in move_file.txt with the new move
     def write_move(self):
+        print(f'{TEAM_NAME} WROTE A MOVE')
+        print(self.currMove)
         new_move = open("move_file", "w")
-        new_move.write(f"{self.playername} {self.currMove[0]},{self.currMove[1]} {self.currMove[2]}, {self.currMove[3]}")
+        new_move.write(f"{self.playername} {self.currMove[0]},{self.currMove[1]} {self.currMove[2]},{self.currMove[3]}")
     
     def makeMove (self):
         #hold off on bubble sort for right now
@@ -120,6 +118,7 @@ class Agent:
             pass
         elif len(validEdges) == 1:
             # 1 move left
+            self.currMove = []
             self.currMove[0] = validEdges[0].x1
             self.currMove[1] = validEdges[0].y1
             self.currMove[2] = validEdges[0].x2
@@ -129,18 +128,19 @@ class Agent:
             tempBoard = copy.deepcopy(self.board)
             # Set the first valid move
             maximum  = self.minimax(tempBoard, 2, True)
-            self.currMove[0] = maximum[0].x1
-            self.currMove[1] = maximum[0].y1
-            self.currMove[2] = maximum[0].x2
-            self.currMove[3] = maximum[0].y2
-            return maximum[1]
+            self.currMove = []
+            self.currMove.append(maximum[1][0])
+            self.currMove.append(maximum[1][1])
+            self.currMove.append(maximum[1][2])
+            self.currMove.append(maximum[1][3])
+
+            return maximum
 
                 
             
    # returns (hueristic, move)
     # true turn means our team, false means opps team
     def minimax(self, board, deep, turn):
-        print (f'Minimax is {deep} and valid moves is {len(board.validEdges)}')
         tempArray =  copy.deepcopy(board.validEdges)
         frontArray = []
 
@@ -224,15 +224,15 @@ class Agent:
 
 
 def main():
-    agent = Agent()
+    agent = Agent(TEAM_NAME)
     gameBoard = Board()
     agent.board = gameBoard
     
-    print ('DotsNBoxinator working')
+    print (f'{TEAM_NAME} working')
     while(agent.check_win() == False):
-        print ('DotsNBoxinator main while loop')
+        print (f'{TEAM_NAME} main while loop')
         #while the move_file.txt file does not exist the program is supposed to wait until it does exist
-        while((not os.path.exists("DotsNBoxinator.go")) and (not os.path.exists("DotsNBoxinator.go.pass"))):
+        while((not os.path.exists(f"{TEAM_NAME}.go")) and (not os.path.exists(f"{TEAM_NAME}.pass"))):
             time.sleep(.1)
             pass
 
@@ -244,19 +244,25 @@ def main():
         if(agent.check_filler_move() == True):
             pass
         elif(agent.check_valid() == True):
-            print('Updating board with opp move')
+            print(f'Updating board with {agent.oppMove}')
             agent.board.update_edge(agent.oppMove, False)
-        agent.board.update_edge(agent.makeMove(), True)
+        max = agent.makeMove()
+        print(max[0])
+        agent.board.update_edge(max[1], True)
         
         #writes currMove to move_file.txt
         agent.write_move()
+        #while((not os.path.exists(f"{agent.opponentName}.go")) and (not os.path.exists(f"{agent.opponentName}.pass"))):
+        #    time.sleep(.1)
+        #    pass
+        time.sleep(1)
     
     if (gameBoard.check_win):
         if(gameBoard.ply - gameBoard.opp > 0):
             print(TEAM_NAME, " has won!")
         else:
             print(agent.opponentName, " has won!")
-
+    
 
 if __name__ == "__main__":
     main()

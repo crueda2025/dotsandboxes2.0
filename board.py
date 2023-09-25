@@ -45,9 +45,6 @@ class Board:
     # Returns the heuristic weight of the edge
     def update_edge(self, move, team):
         tempValidEdges = self.validEdges
-        print(move)
-        print(len(self.edgeV))
-        print(len(tempValidEdges))
 
         hueristic = None
         # Vertical
@@ -55,10 +52,12 @@ class Board:
             #update in the vertical edge array
             self.edgeV[move[0] + move[1]* 9].setCaptured()
             hueristic = self.edgeV[move[0] + move[1]* 9].weight
-            index = self.validEdges.index(self.edgeV[move[0] + move[1]* 9])
-            tempValidEdges.pop(index)
-            print(len(self.edgeV))
-            print(len(tempValidEdges))
+            try:  
+                index = self.validEdges.index(self.edgeV[move[0] + move[1]* 9])
+                tempValidEdges.pop(index)
+            except:
+                print(f"Error dealing with {move}")
+            
 
             if(move[0] == 0):#edge case of left side
                 # update the value of the box on the right 
@@ -81,6 +80,11 @@ class Board:
         elif move[1] == move[3] and move[0] + 1 == move[2]:
             self.edgeH[move[0] + move[1]* 9].setCaptured()
             hueristic = self.edgeH[move[0] + move[1]* 9].weight
+            try:  
+                index = self.validEdges.index(self.edgeH[move[0] + move[1]* 9])
+                tempValidEdges.pop(index)
+            except:
+                print(f"Error dealing with {move}")
             
             #updates amount of edges box has
             if move[1] == 0:
