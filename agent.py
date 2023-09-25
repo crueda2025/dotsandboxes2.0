@@ -138,7 +138,6 @@ class Agent:
             return (board.evalFunc, tempMove)
         for itir in validMoves:
             tempMove = tempArray.pop(0)
-            frontArray.append(tempMove)
             
             #make a duplicate board
             tempBoard = board
@@ -160,7 +159,7 @@ class Agent:
                     tempBoard.minMove = evalFunc
             
             
-            move = self.minimax(tempBoard, tempArray, deep - 1, not turn)
+            move = self.minimax(tempBoard, frontArray.append(tempArray), deep - 1, not turn)
 
             if turn:
                 if move[1] > bestMove[0]:
@@ -168,6 +167,7 @@ class Agent:
             else:
                 if move[1] < bestMove[0]:
                     bestMove = (move[0], tempMove)
+            frontArray.append(tempMove)
         return bestMove
 
             
