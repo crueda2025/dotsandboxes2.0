@@ -25,6 +25,8 @@
 ## Results
     Our initial tests were run against human players. This allowed us to give the agent specific cases, whether they were edge cases or specific behavior we wanted to encourage, as the human player could specify certain moves to validate the agent's ability at recognizing valid/invalid moves.
 
+    After testing against human players we made our program play itself
+
 - describe which tests you ran to try out your program
 - did the program play against human players?
 - did the program play against itself?

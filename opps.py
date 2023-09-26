@@ -18,37 +18,49 @@ ply = 0
 opp = 0
 
 def main():
-    agent = Agent(TEAM_NAME)
+    agent = Agent("opps")
     gameBoard = Board()
     agent.board = gameBoard
+    end = False
+    
     
     print (f'{TEAM_NAME} working')
-    while(agent.check_win() == False):
+    while(os.path.exists("move_file")):
         print (f'{TEAM_NAME} main while loop')
         #while the move_file.txt file does not exist the program is supposed to wait until it does exist
+        agent.start = time.time()
         while((not os.path.exists(f"{TEAM_NAME}.go")) and (not os.path.exists(f"{TEAM_NAME}.pass"))):
             time.sleep(.1)
-            pass
-
+            if(time.time()-agent.start>TIME_LIMIT):
+                end = True
+                break
+        if end:
+            break
         agent.start = time.time() #timer starts for our player's move
 
         #read the file, check if it is an empty pass move, check validity, update board, calculate move, write move to file
         agent.read_move()
-        
-        if(agent.check_filler_move() == True):
-            pass
-        elif(agent.check_valid() == True):
-            print('Updating board with opp move')
+        if os.path.exists(f"{TEAM_NAME}.pass"):
             agent.board.update_edge(agent.oppMove, False)
-        agent.board.update_edge(agent.makeMove(), True)
-        
-        #writes currMove to move_file.txt
-        agent.write_move()
-        while((not os.path.exists(f"{agent.opponentName}.go")) and (not os.path.exists(f"{agent.opponentName}.pass"))):
-            time.sleep(.1)
-            pass
+            agent.currMove = [0,0,0,0]
+            agent.write_move()
+        else:
+            if(agent.check_filler_move() == True):
+                pass
+            elif(agent.check_valid() == True):
+                print(f'Updating board with {agent.oppMove}')
+                agent.board.update_edge(agent.oppMove, False)
+            max = agent.makeMove()
+            print(max[0])
+            agent.board.update_edge(max[1], True)
+            
+            #writes currMove to move_file.txt
+            agent.write_move()
+            print(len(agent.board.validEdges))
+            
+        time.sleep(1)
     
-    if (gameBoard.check_win):
+    if (agent.check_win()):
         if(gameBoard.ply - gameBoard.opp > 0):
             print(TEAM_NAME, " has won!")
         else:
