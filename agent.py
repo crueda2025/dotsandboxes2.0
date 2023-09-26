@@ -120,17 +120,18 @@ class Agent:
         #hold off on bubble sort for right now
         #sortedList = board.validEdges.reverse_bubble_sort()
         validEdges = self.board.validEdges
+        print(f'the amount of valid edges left {len(validEdges)}')
         if len(validEdges) < 1:
             #no moves left
             pass
         elif len(validEdges) == 1:
             # 1 move left
             self.currMove = []
-            self.currMove[0] = validEdges[0].x1
-            self.currMove[1] = validEdges[0].y1
-            self.currMove[2] = validEdges[0].x2
-            self.currMove[3] = validEdges[0].y2
-            return self.currMove
+            self.currMove.append(validEdges[0].x1)
+            self.currMove.append(validEdges[0].y1)
+            self.currMove.append(validEdges[0].x2)
+            self.currMove.append(validEdges[0].y2)
+            return (1, self.currMove)
         else:
             #self.board.minMove = sys.maxsize
             #self.board.maxMove = -sys.maxsize - 1
@@ -163,8 +164,17 @@ class Agent:
         if len(tempArray) < deep:
             deep = len(tempArray)
 
-        if deep == 0 or tempArray is None:
-            return (board.evalFunc, None)
+        if deep == 0:
+            return(board.evalFunc, None)
+        if len(tempArray) == 2:
+            tempMove = [tempArray[0].x1, tempArray[0].y1, tempArray[0].x2, tempArray[0].y2]
+            
+            #make a duplicate board
+            tempBoard = copy.deepcopy(board)
+            
+            tempBoard.update_edge(tempMove, turn)
+            evalFunc = tempBoard.evalFunc
+            return (evalFunc, tempMove)
         for itir in tempArray:
             #tempEdge = tempArray.pop(0)
 
@@ -186,13 +196,13 @@ class Agent:
                 if evalFunc >= tempBoard.minMove:
                     return (evalFunc, tempMove)
                 else:
-                    #board.maxMove = max(evalFunc, tempBoard.maxMove)
+                    board.maxMove = max(evalFunc, tempBoard.maxMove)
                     tempBoard.maxMove = max(evalFunc, tempBoard.maxMove)
             else:
                 if evalFunc <= tempBoard.maxMove:
                     return (evalFunc, tempMove)
                 else:
-                    #board.minMove = min(evalFunc, tempBoard.minMove)
+                    board.minMove = min(evalFunc, tempBoard.minMove)
                     tempBoard.minMove = min(evalFunc, tempBoard.minMove)
             
             #flips the team function 
@@ -203,6 +213,7 @@ class Agent:
             move = self.minimax(tempBoard, deep - 1, not turn)
 
             if move[0] == None:
+                print("Error: no valid max value")
                 break
             if turn:
                 if move[0] > bestMove[0]:
@@ -245,6 +256,7 @@ def main():
     
     
     print (f'{TEAM_NAME} working')
+    time.sleep(1)
     while(os.path.exists("move_file")):
         print (f'{TEAM_NAME} main while loop')
         #while the move_file.txt file does not exist the program is supposed to wait until it does exist

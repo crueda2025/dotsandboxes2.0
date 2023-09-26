@@ -23,7 +23,7 @@ def main():
     agent.board = gameBoard
     end = False
     
-    
+    time.sleep(1)
     print (f'{TEAM_NAME} working')
     while(os.path.exists("move_file")):
         print (f'{TEAM_NAME} main while loop')
