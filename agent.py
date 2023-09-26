@@ -34,13 +34,13 @@ class Agent:
             print("Move is outside the boundaries of the board")
             return False
         elif self.oppMove[0] == self.oppMove[2] and 1+self.oppMove[1] == self.oppMove[3]:
-            if self.board.edgeH[self.oppMove[0] +self.oppMove[1]*10].captured ==False:
+            if self.board.edgeV[self.oppMove[1] +self.oppMove[0]*9].captured ==False:
                 return True
             else: 
                 print("Move is attempting to capture an edge that has already been claimed")
                 return False
         elif self.oppMove[1] == self.oppMove[3] and 1+self.oppMove[0] == self.oppMove[2]:
-            if self.board.edgeV[self.oppMove[0] + self.oppMove[1]*10].captured ==False:
+            if self.board.edgeH[self.oppMove[0] + self.oppMove[1]*9].captured ==False:
                 return True
             else:
                 print("Move is attempting to capture an edge that has already been claimed")
@@ -84,6 +84,13 @@ class Agent:
             temp = int(m)
             self.oppMove.append(temp)
 
+        temprow = self.oppMove[0]
+        temprow2 = self.oppMove[2]
+        self.oppMove[0] = self.oppMove [1]
+        self.oppMove[2] = self.oppMove [3]
+        self.oppMove[1] =  temprow
+        self.oppMove[3] =  temprow2
+
         # checking if the opponent move is in the desired order by the program (ie. "smallest" point first, drawing from left to right or top to bottom)
         if self.oppMove[0] > self.oppMove[2]:
             tempx = self.oppMove[0]
@@ -100,6 +107,7 @@ class Agent:
                 self.oppMove[1] = self.oppMove [3]
                 self.oppMove[2] =  tempx
                 self.oppMove[3] =  tempy
+        # flip x and why for row, col vertices
         
 
     # overwrites the old move in move_file.txt with the new move
@@ -107,7 +115,7 @@ class Agent:
         print(f'{TEAM_NAME} WROTE A MOVE')
         print(self.currMove)
         new_move = open("move_file", "w")
-        new_move.write(f"{self.playername} {self.currMove[0]},{self.currMove[1]} {self.currMove[2]},{self.currMove[3]}")
+        new_move.write(f"{self.playername} {self.currMove[1]},{self.currMove[0]} {self.currMove[3]},{self.currMove[2]}")
     
     def makeMove (self):
         #hold off on bubble sort for right now
@@ -130,7 +138,7 @@ class Agent:
 
             tempBoard = copy.deepcopy(self.board)
             # Set the first valid move
-            maximum  = self.minimax(tempBoard, 3, True)
+            maximum  = self.minimax(tempBoard, 4, True)
             self.currMove = []
             self.currMove.append(maximum[1][0])
             self.currMove.append(maximum[1][1])
@@ -148,7 +156,9 @@ class Agent:
         frontArray = []
 
         if time.time() - self.start >= TIME_LIMIT-.5:
+            print ('time limit reached returning best move')
             return (None, None)
+        
         if turn:
             bestMove = (-sys.maxsize, None)
         else:

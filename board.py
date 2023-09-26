@@ -8,7 +8,7 @@ class Board:
 
         for y in range(9):
             for x in range(10):
-                self.edgeV[x + y * 10] = Edge(x, y, x, y + 1)
+                self.edgeV[y + x * 9] = Edge(x, y, x, y + 1)
 
         for y in range(10):
             for x in range(9):
@@ -16,7 +16,7 @@ class Board:
 
         for y in range(9):
             for x in range(9):
-                self.board[x + y * 8] = Box(self.edgeH[x + y * 8], self.edgeV[x + y * 8 + 1], self.edgeV[x + y * 8], self.edgeH[x + y * 8 + 1])
+                self.board[x + y * 9] = Box(self.edgeH[x + y * 10], self.edgeV[x + y * 10 + 1], self.edgeV[x + y * 10], self.edgeH[x + y * 10 + 1])
         self.ply = 0
         self.opp = 0
         self.evalFunc = 0
@@ -50,10 +50,11 @@ class Board:
         # Vertical
         if move[0] == move[2] and 1 + move[1] == move[3]:
             #update in the vertical edge array
-            self.edgeV[move[0] + move[1]* 9].setCaptured()
-            hueristic = self.edgeV[move[0] + move[1]* 9].weight
+            # y + x*9 where y<9 and x<10
+            self.edgeV[move[1] + move[0]* 9].setCaptured()
+            hueristic = self.edgeV[move[1] + move[0]* 9].weight
             try:  
-                index = self.validEdges.index(self.edgeV[move[0] + move[1]* 9])
+                index = self.validEdges.index(self.edgeV[move[1] + move[0]* 9])
                 tempValidEdges.pop(index)
             except ValueError as e:
                 print(f"Error dealing with {move}, {e}")
@@ -61,23 +62,24 @@ class Board:
 
             if(move[0] == 0):#edge case of left side
                 # update the value of the box on the right 
-                self.board[move[0] + move[1] * 8].setNumEdges()
-                self.check_cap(move[0] + move[1] * 8, team)
+                self.board[move[0] + move[1] * 9].setNumEdges()
+                self.check_cap(move[0] + move[1] * 9, team)
             elif move[0] == 9:#edge case of the right side
             #update the value of the box on the left
-                self.board[move[0] + move[1] * 8 - 1].setNumEdges()
-                self.check_cap(move[0] + move[1] * 8 - 1, team)
+                self.board[move[0] + move[1] * 9 - 1].setNumEdges()
+                self.check_cap(move[0] + move[1] * 9 - 1, team)
             else:
                 # update the value of the box on the right
-                self.board[move[0] + move[1] * 8].setNumEdges()
+                self.board[move[0] + move[1] * 9].setNumEdges()
                 #check if captured
-                self.check_cap(move[0] + move[1] * 8, team)
+                self.check_cap(move[0] + move[1] * 9, team)
                 # update the value of the box on the left
-                self.board[move[0] + move[1] * 8 - 1].setNumEdges()
+                self.board[move[0] + move[1] * 9 - 1].setNumEdges()
                 #check if captured
-                self.check_cap(move[0] + move[1] * 8 - 1, team)
+                self.check_cap(move[0] + move[1] * 9 - 1, team)
         # Horizontal        
         elif move[1] == move[3] and move[0] + 1 == move[2]:
+            # x + y*9 where x<9 and y<10
             self.edgeH[move[0] + move[1]* 9].setCaptured()
             hueristic = self.edgeH[move[0] + move[1]* 9].weight
             try:  
@@ -88,26 +90,26 @@ class Board:
             
             #updates amount of edges box has
             if move[1] == 0:
-                self.board[move[0] + move[1] * 8].setNumEdges()
+                self.board[move[1] + move[0] * 9].setNumEdges()
                 #if box on the bottom was captured
-                self.check_cap(move[0] + move[1] * 8, team)
+                self.check_cap(move[1] + move[0] * 9, team)
 
             elif move[1] == 9:
-                self.board[move[0] + move[1] * 8 - 1].setNumEdges()
+                self.board[move[1] + move[0] * 9 - 1].setNumEdges()
                 #//if box on the top was captured
-                self.check_cap(move[0] + move[1] * 8 - 1, team)
+                self.check_cap(move[1] + move[0] * 9 - 1, team)
 
             else:
                 # set edges in first box
-                self.board[move[0] + move[1] * 8].setNumEdges()
+                self.board[move[1] + move[0] * 9].setNumEdges()
                 #//if box on the bottom was captured
-                self.check_cap(move[0] + move[1] * 8, team)
+                self.check_cap(move[1] + move[0] * 9, team)
                 
                 # set edges in second box
-                self.board[move[0] + move[1] * 8 - 1].setNumEdges()
+                self.board[move[1] + move[0] * 9 - 1].setNumEdges()
                 
                 #//if box on the top was captured
-                self.check_cap(move[0] + move[1] * 8 - 1, team)
+                self.check_cap(move[1] + move[0] * 9 - 1, team)
         
         #for all the valid edges remaining, check to see if they were marked as captured
         #if marked as captured, remove them from the list of valid moves/edges remaining
