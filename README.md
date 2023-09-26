@@ -1,5 +1,4 @@
 # dotsandboxes2.0
-## Work Distribution
 
 ## User Instructions
 1. Run the agent.py file, it contains the main() method for the program
@@ -25,18 +24,9 @@
 ## Results
     Our initial tests were run against human players. This allowed us to give the agent specific cases, whether they were edge cases or specific behavior we wanted to encourage, as the human player could specify certain moves to validate the agent's ability at recognizing valid/invalid moves.
 
-    After testing against human players we made our program play itself
-
-- describe which tests you ran to try out your program
-- did the program play against human players?
-- did the program play against itself?
-- did the program play against other programs?
-- how did the program do during these games?
-- describe the strengths and weaknesses of the program
+    After testing against human players we made our program play against itself. During these match ups the program was much more likely to reach the time limit than it was during games against human players. 
 
 ## Discussion
     The evaluation function we chose is good because it is simple and remains consistent with the utility function no matter what. It does have some limitations at the beginning of the game because it doesn't provide as much "guidance" as it does after the board begins to fill up. 
 
     The heuristic we chose is good because it takes into account the surroundings of the edge in question. In smaller boards this becomes more imperative, but our heuristic allows for the agent to take into account the possibility of "chaining" boxes together. By restricting/weighting moves that have an adjacent box with two edges already captured we can avoid giving away boxes to our opponent to capture. By evaluating the adjacent boxes to an edge
-
-- why are the evaluation and function and heuristic(s) you chose good?
