@@ -137,8 +137,9 @@ class Agent:
             #self.board.maxMove = -sys.maxsize - 1
 
             tempBoard = copy.deepcopy(self.board)
+            validEdges = self.reverse_bubble_sort(validEdges)
             # Set the first valid move
-            maximum  = self.minimax(tempBoard, 5, True)
+            maximum  = self.minimax(tempBoard, 11, True)
             self.currMove = []
             self.currMove.append(maximum[1][0])
             self.currMove.append(maximum[1][1])

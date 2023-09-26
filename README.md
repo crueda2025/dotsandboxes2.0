@@ -1,13 +1,12 @@
 # dotsandboxes2.0
-<<<<<<< HEAD
-## Work Distribution
-readme - Zane Altheimer
-board.py - Everyone
-Agent.py - everyone
-opps.py - Ethan and Cody
+## Group Members
+Cody Rueda, Ethan Moynihan, Zane Altheimer
 
-=======
->>>>>>> refs/remotes/origin/main
+## Work Distribution
+readme - Zane
+board.py - Everyone
+Agent.py - Everyone
+opps.py - Ethan and Cody
 
 ## User Instructions
 1. Run the agent.py file, it contains the main() method for the program
@@ -30,21 +29,20 @@ opps.py - Ethan and Cody
     3. An edge that has an adjacent box with no edges captured
     4. An edge that has two adjacent boxes with two edges captured, this creates a scenario where we "give away" boxes to our opponent.
 
+    Some strategies we used when trying to limit our tree was cutting off search.  We started with a depth of 5, but we never ran out of time so we started increasing it.  We planned on implementing depth interative, but it was not a major priorty.  Whenever our cutting off depth ex depth = 5. was deeper than the amount of moves we would have left then we would change our cutting off to that limit.
+
+    We also bubble sorted the list of valid moves so that we can have the better moves appear near the beginning of the list which should decrease the time it takes by pruning earlier.
+
 ## Results
     Our initial tests were run against human players. This allowed us to give the agent specific cases, whether they were edge cases or specific behavior we wanted to encourage, as the human player could specify certain moves to validate the agent's ability at recognizing valid/invalid moves.
 
-<<<<<<< HEAD
-    After testing against human players we made our program play against itself. During these games the program was more likely to reach the time limit than in the games against human players. It was also much more common for the programs to tie against each other than in the human vs. program games. 
 
-=======
-    After testing against human players we made our program play against itself. During these match ups the program was much more likely to reach the time limit than it was during games against human players. 
->>>>>>> refs/remotes/origin/main
+    After testing against human players we made our program play against itself. During this testing we noticed that the referee always chose the same team to play first each time.  It allowed us to play moves a lot quicker and find problems in our code that occured near the end game.  We realized that our minimax is returning the move after the move we want.
+
 
 ## Discussion
     The evaluation function we chose is good because it is simple and remains consistent with the utility function no matter what. It does have some limitations at the beginning of the game because it doesn't provide as much "guidance" as it does after the board begins to fill up. 
 
-<<<<<<< HEAD
-    The heuristic we chose is good because it takes into account the surroundings of the edge in question. In smaller boards this becomes more imperative, but our heuristic allows for the agent to take into account the possibility of "chaining" boxes together. By restricting/weighting moves that have an adjacent box with two edges already captured we can avoid giving away boxes to our opponent to capture. By evaluating the adjacent boxes to an edge
-=======
-    The heuristic we chose is good because it takes into account the surroundings of the edge in question. In smaller boards this becomes more imperative, but our heuristic allows for the agent to take into account the possibility of "chaining" boxes together. By restricting/weighting moves that have an adjacent box with two edges already captured we can avoid giving away boxes to our opponent to capture. By evaluating the adjacent boxes to an edge
->>>>>>> refs/remotes/origin/main
+    The heuristic we chose is good because it takes into account the surroundings of the edge in question. In smaller boards this becomes more imperative, but our heuristic allows for the agent to take into account the possibility of "chaining" boxes together. By restricting/weighting moves that have an adjacent box with two edges already captured we can avoid giving away boxes to our opponent to capture. 
+    
+    Implementing depth iterating search also allowed for the program to search a larger number of possibilities while still respecting the time limit of the program. 
