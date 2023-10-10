@@ -195,6 +195,7 @@ class Agent:
             #minimax attempt 1st part
             if turn:
                 if evalFunc >= tempBoard.minMove:
+                    
                     return (evalFunc, tempMove)
                 else:
                     board.maxMove = max(evalFunc, tempBoard.maxMove)
@@ -208,6 +209,7 @@ class Agent:
             
             #flips the team function 
             if tempPly == tempBoard.ply - 1 or tempOpp == tempBoard.opp - 1:
+                
                 turn = not turn
 
             
@@ -225,7 +227,7 @@ class Agent:
             #frontArray.append(tempMove)
         return bestMove
             
-    def reverse_bubble_sort(arr:Edge):
+    def reverse_bubble_sort(self, arr:Edge):
         n = len(arr)
         for i in range(n):
             swapped = False
